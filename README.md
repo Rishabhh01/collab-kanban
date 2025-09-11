@@ -34,5 +34,5 @@ CollabKanban is a fullstack Kanban board built for teams who care about clarity,
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/collab-kanban.git
+git clone https://github.com/Rishabhh01/collab-kanban.git
 cd collab-kanban
