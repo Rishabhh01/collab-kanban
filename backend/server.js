@@ -24,15 +24,26 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 5000;
 
 // ✅ CORS setup (no wildcard crash)
+const allowedOrigins = [
+  'https://collab-kanban.onrender.com',
+  'http://localhost:5173', // for local dev
+];
+
 app.use(
   cors({
-    origin: 'https://collab-kanban.onrender.com',
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-    preflightContinue: false,
   })
 );
+
 
 app.use(express.json());
 
