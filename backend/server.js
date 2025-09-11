@@ -5,6 +5,8 @@ dotenv.config();
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createWebSocketServer } from './websocket.js';
 
 // Import routes
@@ -17,10 +19,14 @@ import cardRoutes from './routes/cardRoutes.js';
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Ensure PORT is correctly set for Render
+// Resolve __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ Port for Render
 const PORT = process.env.PORT || 5000;
 
-// ✅ Update CORS for production
+// ✅ CORS setup
 app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
@@ -31,16 +37,19 @@ app.use(
 
 app.use(express.json());
 
-// ---------- ROUTES ----------
+// ---------- API ROUTES ----------
 app.use('/api', testRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
 app.use('/api/boards', columnRoutes);
 app.use('/api/columns', cardRoutes);
 
-// ---------- ROOT ROUTE ----------
-app.get('/', (req, res) => {
-  res.send('🚀 Collab Kanban Server is running!');
+// ---------- STATIC FRONTEND ----------
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ✅ Catch-all route for React deep links
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ---------- WEBSOCKETS ----------
@@ -48,5 +57,5 @@ createWebSocketServer(server);
 
 // ---------- START SERVER ----------
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 CollabKanban server running on port ${PORT}`);
 });

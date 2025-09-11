@@ -25,46 +25,39 @@ const AuthWrapper = ({ onAuthSuccess }) => {
   };
 
   const handleSignup = async ({ email, password, name }) => {
-    setLoading(true);
-    try {
-      const res = await axios.post(`${API_URL}/auth/register`, {
-        email,
-        password,
-        name, // ✅ Include name in payload
-      });
-      localStorage.setItem("token", res.data.token);
-      toast.success("Account created");
-      onAuthSuccess();
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Signup failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const res = await axios.post(`${API_URL}/auth/register`, {
+      email,
+      password,
+      name, // ✅ Include name in payload
+    });
+    localStorage.setItem("token", res.data.token);
+    toast.success("Account created");
+    onAuthSuccess();
+  } catch (err) {
+    toast.error(err.response?.data?.error || "Signup failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center">
-      <div className="w-full max-w-md">
-        {/* Login or Signup Form */}
-        {mode === "login" ? (
-          <LoginForm onLogin={handleLogin} />
-        ) : (
-          <SignupForm onSignup={handleSignup} />
-        )}
-
-        {/* Toggle button now right below the form */}
-        <div className="mt-3 text-center">
-          <button
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="text-sm text-gray-400 hover:text-gray-200"
-            disabled={loading}
-          >
-            {mode === "login"
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Log in"}
-          </button>
-        </div>
-      </div>
+      {mode === "login" ? (
+        <LoginForm onLogin={handleLogin} />
+      ) : (
+        <SignupForm onSignup={handleSignup} />
+      )}
+      <button
+        onClick={() => setMode(mode === "login" ? "signup" : "login")}
+        className="mt-4 text-sm text-gray-400 hover:text-gray-200"
+        disabled={loading}
+      >
+        {mode === "login"
+          ? "Don't have an account? Sign up"
+          : "Already have an account? Log in"}
+      </button>
     </div>
   );
 };
