@@ -13,7 +13,11 @@ const AuthWrapper = ({ onAuthSuccess }) => {
   const handleLogin = async ({ email, password }) => {
     setLoading(true);
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, { email, password });
+      const res = await axios.post(
+        `${API_URL}/auth/login`,
+        { email, password },
+        { withCredentials: true } // ✅ Include credentials for CORS
+      );
       localStorage.setItem("token", res.data.token);
       toast.success("Logged in successfully");
       onAuthSuccess();
@@ -25,22 +29,22 @@ const AuthWrapper = ({ onAuthSuccess }) => {
   };
 
   const handleSignup = async ({ email, password, name }) => {
-  setLoading(true);
-  try {
-    const res = await axios.post(`${API_URL}/auth/register`, {
-      email,
-      password,
-      name, // ✅ Include name in payload
-    });
-    localStorage.setItem("token", res.data.token);
-    toast.success("Account created");
-    onAuthSuccess();
-  } catch (err) {
-    toast.error(err.response?.data?.error || "Signup failed");
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        `${API_URL}/auth/register`,
+        { email, password, name },
+        { withCredentials: true } // ✅ Include credentials for CORS
+      );
+      localStorage.setItem("token", res.data.token);
+      toast.success("Account created");
+      onAuthSuccess();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center">
