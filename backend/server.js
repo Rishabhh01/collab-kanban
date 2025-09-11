@@ -47,10 +47,6 @@ app.use('/api/columns', cardRoutes);
 // ---------- STATIC FRONTEND ----------
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Catch-all route for React deep links
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // ---------- WEBSOCKETS ----------
 createWebSocketServer(server);
