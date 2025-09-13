@@ -1,12 +1,12 @@
-# 🧠 CollabKanban
-Organize tasks. Collaborate in real time. Feel at home.
+ ## Collaborative Kanban (Real-Time Boards)
 
-CollabKanban is a full-stack Kanban board designed for teams that value clarity, intuitive onboarding, and seamless collaboration.  
-Built with empathy and deployed with precision, it’s more than just a task management tool—it’s a shared digital space that feels welcoming from the first click.
+A real-time collaborative Kanban platform designed for seamless project and task management. This application allows teams to create boards, manage tasks, and collaborate live, similar to tools like Trello or Jira — but with custom-built real-time features and presence tracking.
+
+Built as part of an assignment, the project emphasizes real-time updates, concurrent editing, and scalability, showcasing advanced full-stack development skills.
 
 ---
 
-## ✨ Key Features
+##  Key Features
 - **Seamless Real-Time Collaboration:**  
   Work in sync with your team using WebSocket technology. See changes instantly without refreshing the page.
 
@@ -30,7 +30,7 @@ Built with empathy and deployed with precision, it’s more than just a task man
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+##  Tech Stack & Architecture
 This project uses a **modern, decoupled architecture** with a React frontend, a Node.js/Express backend, and a PostgreSQL database managed by Supabase.
 
 | **Layer**     | **Technologies & Frameworks** |
@@ -43,7 +43,7 @@ This project uses a **modern, decoupled architecture** with a React frontend, a 
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 Follow these instructions to set up and run the project locally.
 
 ### **Prerequisites**
@@ -109,7 +109,7 @@ npm start # Or: node server.js
 ```
 ---
 
-## 🐳 Docker Deployment
+##  Docker Deployment
 
 The application is fully containerized. To build and run the entire stack with a single command:
 
@@ -126,7 +126,7 @@ docker run -p 5000:5000 collabkanban
 This command serves both the frontend and backend from a single container on port 5000.
 ---
 
-## 🔐 Authentication Flow
+##  Authentication Flow
 
 - Users sign up and log in using **email and password**  
 - **JWT tokens** are stored in `localStorage` and sent via `Authorization` headers  
@@ -134,13 +134,13 @@ This command serves both the frontend and backend from a single container on por
 
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 
 
 ---
 <img width="1221" height="818" alt="github image" src="https://github.com/user-attachments/assets/6fe79cc0-a579-4ae8-9998-1a1c41373854" />
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you'd like to improve.
 
@@ -148,7 +148,7 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ---
 
-## 📬 Feedback
+##  Feedback
 
 Have ideas, bugs, or suggestions?  
 Open an issue or start a discussion.  
@@ -158,6 +158,6 @@ CollabKanban thrives on **collaborative critique and emotional clarity**.
 
 
 
-## ✨ Built by Rishabh
+## Built by Rishabh
 
 A product-minded engineer who blends technical rigor with emotional design. CollabKanban is a reflection of that philosophy: fast, friendly, and built to feel like home.
