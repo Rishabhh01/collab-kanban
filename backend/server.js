@@ -14,6 +14,8 @@ import authRoutes from './routes/auth.js';
 import boardRoutes from './routes/boardRoutes.js';
 import columnRoutes from './routes/columnRoutes.js';
 import cardRoutes from './routes/cardRoutes.js';
+import activityRoutes from './routes/activityRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -53,6 +55,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
 app.use('/api/boards', columnRoutes);
 app.use('/api/columns', cardRoutes);
+app.use('/api/activities', activityRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // ---------- STATIC FRONTEND ----------
 app.use(express.static(path.join(__dirname, 'public')));

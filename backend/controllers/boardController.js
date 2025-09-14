@@ -1,5 +1,11 @@
 import { supabase } from '../supabaseClient.js';
 import { broadcastUpdate } from '../websocket.js';
+import presenceManager from '../utils/presenceManager.js';
+
+// Helper function to get online users for a board
+const getOnlineUsersForBoard = (boardId) => {
+  return presenceManager.getOnlineUsersForBoard(boardId);
+};
 
 // ------------------- CREATE A BOARD -------------------
 export const createBoard = async (req, res) => {
@@ -113,7 +119,8 @@ export const getBoardDetails = async (req, res) => {
     const { data: columns, error: columnError } = await supabase
       .from('columns')
       .select('*')
-      .eq('board_id', boardId);
+      .eq('board_id', boardId)
+      .order('order', { ascending: true });
 
     if (columnError) {
       return res.status(400).json({ error: columnError.message });
@@ -121,22 +128,155 @@ export const getBoardDetails = async (req, res) => {
 
     // Fetch cards for these columns
     const columnIds = columns.map((col) => col.id);
-    const { data: cards, error: cardError } = await supabase
-      .from('cards')
-      .select('*')
-      .in('column_id', columnIds);
+    let cards = [];
+    if (columnIds.length > 0) {
+      const { data: cardsData, error: cardError } = await supabase
+        .from('cards')
+        .select('*')
+        .in('column_id', columnIds);
 
-    if (cardError) {
-      return res.status(400).json({ error: cardError.message });
+      if (cardError) {
+        return res.status(400).json({ error: cardError.message });
+      }
+      cards = cardsData || [];
     }
 
+    // Get online users for this board (from Redis or in-memory store)
+    const onlineUsers = await getOnlineUsersForBoard(boardId);
+
+    // Calculate statistics
+    const totalCards = cards.length;
+    const totalColumns = columns.length;
+    const lastUpdated = new Date().toISOString();
+
+    // Add statistics to board object
+    const boardWithStats = {
+      ...board,
+      statistics: {
+        totalColumns,
+        totalCards,
+        lastUpdated,
+        onlineUsers: onlineUsers.length
+      },
+      onlineUsers: onlineUsers
+    };
+
+    // Attach cards to their respective columns
+    const columnsWithCards = columns.map(column => ({
+      ...column,
+      cards: cards.filter(card => card.column_id === column.id)
+    }));
+
     res.json({
-      board,
-      columns,
-      cards,
+      board: boardWithStats,
+      columns: columnsWithCards,
     });
   } catch (err) {
     console.error("Error fetching board details:", err.message);
     res.status(500).json({ error: 'Server error while fetching board details' });
+  }
+};
+
+// ------------------- JOIN BOARD (USER PRESENCE) -------------------
+export const joinBoard = async (req, res) => {
+  try {
+    const { boardId } = req.params;
+    const userId = req.user?.id;
+    const userInfo = {
+      name: req.user?.name || req.user?.email || 'Anonymous User',
+      email: req.user?.email || ''
+    };
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User authentication required' });
+    }
+
+    if (!boardId) {
+      return res.status(400).json({ error: 'Board ID is required' });
+    }
+
+    // Verify board exists
+    const { data: board, error: boardError } = await supabase
+      .from('boards')
+      .select('id')
+      .eq('id', boardId)
+      .single();
+
+    if (boardError || !board) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+
+    // Add user to board
+    const onlineUsers = presenceManager.addUserToBoard(userId, boardId, userInfo);
+
+    // Broadcast user joined
+    broadcastUpdate({ 
+      type: 'USER_JOINED_BOARD', 
+      boardId, 
+      user: { id: userId, ...userInfo },
+      onlineUsers 
+    });
+
+    res.json({ 
+      message: 'Joined board successfully',
+      onlineUsers,
+      user: { id: userId, ...userInfo }
+    });
+  } catch (err) {
+    console.error("Error joining board:", err.message);
+    res.status(500).json({ error: 'Server error while joining board' });
+  }
+};
+
+// ------------------- LEAVE BOARD (USER PRESENCE) -------------------
+export const leaveBoard = async (req, res) => {
+  try {
+    const { boardId } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User authentication required' });
+    }
+
+    if (!boardId) {
+      return res.status(400).json({ error: 'Board ID is required' });
+    }
+
+    // Remove user from board
+    const onlineUsers = presenceManager.removeUserFromBoard(userId, boardId);
+
+    // Broadcast user left
+    broadcastUpdate({ 
+      type: 'USER_LEFT_BOARD', 
+      boardId, 
+      userId,
+      onlineUsers 
+    });
+
+    res.json({ 
+      message: 'Left board successfully',
+      onlineUsers
+    });
+  } catch (err) {
+    console.error("Error leaving board:", err.message);
+    res.status(500).json({ error: 'Server error while leaving board' });
+  }
+};
+
+// ------------------- GET ONLINE USERS FOR BOARD -------------------
+export const getOnlineUsers = async (req, res) => {
+  try {
+    const { boardId } = req.params;
+
+    if (!boardId) {
+      return res.status(400).json({ error: 'Board ID is required' });
+    }
+
+    const onlineUsers = presenceManager.getOnlineUsersForBoard(boardId);
+
+    res.json({ onlineUsers });
+  } catch (err) {
+    console.error("Error getting online users:", err.message);
+    res.status(500).json({ error: 'Server error while getting online users' });
   }
 };

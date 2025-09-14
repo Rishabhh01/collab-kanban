@@ -50,10 +50,11 @@ const Card = ({ card, columnId, onCardDeleted }) => {
         className="cursor-grab"
       >
         <div
-          className="bg-gray-700 border border-gray-600 p-4 rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-600 transition-all duration-200 cursor-pointer group"
+          className="bg-gray-700 border border-gray-600 p-4 rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-600 transition-all duration-200 cursor-pointer group relative"
           onClick={() => setIsEditOpen(true)}
           title="Click to view and edit card details"
         >
+          {/* Card Header */}
           <div className="flex justify-between items-start mb-3">
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-white text-base leading-tight mb-1">{cardData.title}</h3>
@@ -85,33 +86,59 @@ const Card = ({ card, columnId, onCardDeleted }) => {
             </div>
           </div>
 
-          {/* Labels and due date */}
-          <div className="flex justify-between items-center text-xs">
-            <div className="flex flex-wrap gap-1">
-              {cardData.labels?.map((label, idx) => (
+          {/* Labels */}
+          {cardData.labels && cardData.labels.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-3">
+              {cardData.labels.map((label, idx) => (
                 <span key={idx} className="bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-1 rounded-full text-white text-xs font-medium">
                   {label}
                 </span>
               ))}
             </div>
+          )}
+
+          {/* Card Footer */}
+          <div className="flex justify-between items-center">
+            {/* Due Date */}
             {cardData.due_date && (
               <div className="flex items-center space-x-1 text-gray-400">
                 <CalendarIcon className="w-3 h-3" />
                 <span className="text-xs">{cardData.due_date}</span>
               </div>
             )}
-          </div>
-
-          {cardData.assignee_id && (
-            <div className="mt-3 pt-2 border-t border-gray-600">
+            
+            {/* Assignee */}
+            {cardData.assignee_id && (
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center border-2 border-gray-600">
                   <span className="text-xs text-white font-medium">
                     {cardData.assignee_id.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <span className="text-xs text-gray-400">Assigned to {cardData.assignee_id}</span>
+                <span className="text-xs text-gray-400 hidden sm:inline">Assigned</span>
               </div>
+            )}
+          </div>
+
+          {/* Collaboration Indicators */}
+          <div className="absolute top-2 right-2 flex items-center gap-1">
+            {/* Online indicator for assigned user */}
+            {cardData.assignee_id && (
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Assignee is online"></div>
+            )}
+            {/* Recently updated indicator */}
+            <div className="w-2 h-2 bg-blue-500 rounded-full" title="Recently updated"></div>
+          </div>
+
+          {/* Priority Indicator */}
+          {cardData.priority && (
+            <div className="absolute top-2 left-2">
+              <div className={`w-3 h-3 rounded-full ${
+                cardData.priority === 'urgent' ? 'bg-red-600' :
+                cardData.priority === 'high' ? 'bg-red-500' :
+                cardData.priority === 'medium' ? 'bg-yellow-500' :
+                'bg-green-500'
+              }`} title={`Priority: ${cardData.priority}`}></div>
             </div>
           )}
         </div>
