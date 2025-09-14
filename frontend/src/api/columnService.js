@@ -33,3 +33,16 @@ export const createColumn = async ({ title, board_id }) => {
     return null;
   }
 };
+
+export const deleteColumn = async (columnId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.delete(`${API_BASE}/boards/columns/${columnId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error deleting column:", err);
+    throw err;
+  }
+};

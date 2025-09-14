@@ -41,12 +41,19 @@ export const getBoardsWithColumns = async () => {
 
 export const createBoard = async (boardData) => {
   try {
+    console.log("API_URL:", API_URL);
+    console.log("Board data:", boardData);
+    console.log("Auth headers:", getAuthHeaders());
+    
     const res = await axios.post(`${API_URL}/boards`, boardData, {
       headers: getAuthHeaders(),
     });
+    console.log("Board creation response:", res.data);
     return res.data;
   } catch (error) {
     console.error("Error creating board:", error);
+    console.error("Error response:", error.response?.data);
+    console.error("Error status:", error.response?.status);
     throw error;
   }
 };
@@ -65,12 +72,15 @@ export const deleteBoard = async (boardId) => {
 
 export const getBoardDetails = async (boardId) => {
   try {
+    console.log("Fetching board details for ID:", boardId);
     const res = await axios.get(`${API_URL}/boards/${boardId}/details`, {
       headers: getAuthHeaders(),
     });
+    console.log("Board details response:", res.data);
     return res.data; // { board, columns, cards }
   } catch (error) {
     console.error("Error fetching board details:", error);
+    console.error("Error response:", error.response?.data);
     throw error;
   }
 };

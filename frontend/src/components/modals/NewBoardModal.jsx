@@ -14,14 +14,19 @@ const NewBoardModal = ({ isOpen, onClose, onBoardCreated }) => {
     }
 
     try {
+      console.log("Creating board with data:", { title, description });
       const newBoard = await createBoard({ title, description });
+      console.log("Board created successfully:", newBoard);
       onBoardCreated(newBoard);
-      toast.success("Board created");
+      toast.success("Board created successfully!");
       setTitle("");
       setDescription("");
       onClose();
-    } catch (err) {
-      toast.error("Failed to create board");
+    } catch (error) {
+      console.error("Failed to create board:", error);
+      console.error("Error response:", error.response?.data);
+      const errorMessage = error.response?.data?.message || error.message || "Failed to create board";
+      toast.error(`Failed to create board: ${errorMessage}`);
     }
   };
 
