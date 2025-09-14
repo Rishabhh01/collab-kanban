@@ -136,9 +136,11 @@ This command serves both the frontend and backend from a single container on por
 
 ## Screenshots
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b75d842b-3c1f-4f6d-b67f-9c98b3eb696e" />
 
 ---
-<img width="1221" height="818" alt="github image" src="https://github.com/user-attachments/assets/6fe79cc0-a579-4ae8-9998-1a1c41373854" />
+
+
 
 ## Contributing
 
@@ -156,8 +158,6 @@ CollabKanban thrives on **collaborative critique and emotional clarity**.
 
 ---
 
-
-
-## Built by Rishabh
-
-A product-minded engineer who blends technical rigor with emotional design. CollabKanban is a reflection of that philosophy: fast, friendly, and built to feel like home.
+## Author
+**Rishabh Chauhan**  
+Email: rishabhc2234@gmail.com
