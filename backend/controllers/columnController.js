@@ -60,3 +60,45 @@ export const getColumns = async (req, res) => {
     res.status(500).json({ error: 'Server error while fetching columns' });
   }
 };
+
+// ---------------- DELETE A COLUMN ----------------
+export const deleteColumn = async (req, res) => {
+  const { columnId } = req.params;
+  const owner_id = req.user?.id || null;
+
+  if (!columnId) {
+    return res.status(400).json({ error: 'Column ID is required' });
+  }
+
+  try {
+    // First, delete all cards in this column
+    const { error: cardsError } = await supabase
+      .from('cards')
+      .delete()
+      .eq('column_id', columnId);
+
+    if (cardsError) {
+      console.error('Error deleting cards:', cardsError);
+      return res.status(400).json({ error: 'Failed to delete cards in column' });
+    }
+
+    // Then delete the column itself
+    const { error: columnError } = await supabase
+      .from('columns')
+      .delete()
+      .eq('id', columnId);
+
+    if (columnError) {
+      console.error('Error deleting column:', columnError);
+      return res.status(400).json({ error: 'Failed to delete column' });
+    }
+
+    // Broadcast column deletion to WebSocket subscribers
+    broadcastUpdate({ type: 'COLUMN_DELETED', columnId });
+
+    res.status(200).json({ message: 'Column deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting column:', err.message);
+    res.status(500).json({ error: 'Server error while deleting column' });
+  }
+};

@@ -3,27 +3,61 @@ import { broadcastUpdate } from '../websocket.js';
 
 // ------------------- CREATE A BOARD -------------------
 export const createBoard = async (req, res) => {
-  const { title } = req.body;
-  const owner_id = req.user?.id || null;
+  try {
+    const { title } = req.body;
+    const owner_id = req.user?.id || null;
 
-  if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
+    if (!title) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+
+    console.log("Creating board with:", { title, owner_id });
+    console.log("Full user object:", req.user);
+  
+  // Check if user exists in database
+  let validOwnerId = null;
+  if (owner_id) {
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', owner_id)
+      .single();
+    
+    console.log("User lookup result:", { user, userError });
+    
+    if (userError || !user) {
+      console.log("User not found, creating board without owner");
+      validOwnerId = null;
+    } else {
+      console.log("User found, using owner_id:", user.id);
+      validOwnerId = user.id;
+    }
   }
 
-  console.log("Creating board with:", { title, owner_id });
+  // Create board with valid owner_id (or without if user doesn't exist)
+  const boardData = { title };
+  if (validOwnerId) {
+    boardData.owner_id = validOwnerId;
+  }
+
+  console.log("Creating board with data:", boardData);
 
   const { data, error } = await supabase
     .from('boards')
-    .insert([{ title, owner_id }])
+    .insert([boardData])
     .select();
 
-  if (error) {
-    console.error("Supabase insert error:", error);
-    return res.status(400).json({ error: error.message });
-  }
+    if (error) {
+      console.error("Supabase insert error:", error);
+      return res.status(400).json({ error: error.message });
+    }
 
-  broadcastUpdate({ type: 'BOARD_CREATED', board: data[0] });
-  res.status(201).json(data[0]);
+    broadcastUpdate({ type: 'BOARD_CREATED', board: data[0] });
+    res.status(201).json(data[0]);
+  } catch (err) {
+    console.error("Unexpected error in createBoard:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 // ------------------- GET ALL BOARDS -------------------
