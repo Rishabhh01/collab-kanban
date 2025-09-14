@@ -75,7 +75,7 @@ class WebSocketService {
   }
 
   // Join a board
-  joinBoard(boardId, userInfo) => {
+  joinBoard(boardId, userInfo) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({
         type: 'JOIN_BOARD',
@@ -90,7 +90,7 @@ class WebSocketService {
   }
 
   // Leave a board
-  leaveBoard(boardId, userId) => {
+  leaveBoard(boardId, userId) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({
         type: 'LEAVE_BOARD',
