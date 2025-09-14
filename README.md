@@ -158,8 +158,6 @@ CollabKanban thrives on **collaborative critique and emotional clarity**.
 
 ---
 
-
-
-## Built by Rishabh
-
-A product-minded engineer who blends technical rigor with emotional design. CollabKanban is a reflection of that philosophy: fast, friendly, and built to feel like home.
+## Author
+**Rishabh Chauhan**  
+Email: rishabhc2234@gmail.com
